@@ -122,3 +122,13 @@ class UsersRoleWiseSerializer(serializers.ModelSerializer):
         fields = ['user_input']
         
     
+
+class EventsTitleWiseSerializer(serializers.ModelSerializer):
+  titlewise_event_list = serializers.SerializerMethodField()
+  def get_titlewise_event_list(self,obj):
+     event_category = obj.events.all()     #blogs is related name of bloguser model.
+     serializer = AdminEventSerializer(event_category,many=True)
+     return serializer.data
+  class Meta:
+      model=Title
+      fields=['id','title','country_of_origin','titlewise_event_list']

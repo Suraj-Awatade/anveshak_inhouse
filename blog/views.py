@@ -6,7 +6,7 @@ from blog.serializers import (AdminTitleSerializer, AuthorTitleSerializer, Revie
                               ReviewerTitleSerializer, RoleSerializer,ContentWriterTitleSerializer,
                               UserTitleSerializer,UserEventSerializer,AdminEventSerializer,
                               ReviewerEventSerializer,ContentWriterEventSerializer,
-                              AuthorEventSerializer,BlogSerializer,UsersRoleWiseSerializer)
+                              AuthorEventSerializer,BlogSerializer,UsersRoleWiseSerializer,EventsTitleWiseSerializer)
 from .permissions import IsAdmin,IsAuthor,IsContentWriter,IsReviewer,IsUser
 from blog.functions import get_user_role
 from blog.classes import StandardResponse
@@ -214,3 +214,10 @@ class UsersRoleWise(APIView):
             data = serializer.errors
             
         return Response(data)
+
+class EventsTitleWise(APIView):
+    pagination_class=CustomPageNumberPagination
+    def get(self, request, format=None):
+        user = Title.objects.all()
+        serializer = EventsTitleWiseSerializer(user, many=True)
+        return Response(serializer.data)

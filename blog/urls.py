@@ -1,9 +1,8 @@
 from django.urls import path
-
-from .views import RoleViewSet,RolewiseUsers, UsersRoleWise,TitleViewSet,EventViewSet,ReviewCommentViewSet,AuthorView,FetchAllBlog,AdminAddUser
-
+from .views import RoleViewSet,EventsTitleWise,UsersRoleWise,TitleViewSet,EventViewSet,ReviewCommentViewSet,AuthorView,FetchAllBlog,AdminAddUser
 from .views import RoleViewSet, TitleViewSet,EventViewSet,ReviewCommentViewSet,AuthorView,FetchAllBlog
 from rest_framework_nested import routers
+
 router = routers.DefaultRouter()
 
 router.register('titles',viewset=TitleViewSet,basename='titles')
@@ -20,6 +19,7 @@ urlpatterns = [
     path('author-interface/', AuthorView.as_view(),name='admin'),
     path('fetch-blogs/',FetchAllBlog.as_view(),name='allblog'),
     path('rolewise-user/',UsersRoleWise.as_view(),name='rolewise'),
+    path('event-title-wise/',EventsTitleWise.as_view(),name='events_title_wise')
     
 ] + router.urls + title_router.urls + event_router.urls
 
