@@ -172,6 +172,7 @@ class AdminPanel(viewsets.ModelViewSet):      #Pending
         serializer = AccountSerializer(self.queryset,many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
+
     
     def partial_update(self, request,pk):
         user = Account.objects.get(pk=pk)

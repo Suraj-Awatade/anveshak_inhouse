@@ -28,7 +28,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             phone=self.validated_data['phone'],
             dob=self.validated_data['dob'],
             gender=self.validated_data['gender'],
-            password = self.validated_data['password']
+            # password = self.validated_data['password']
             # is_admin = self.validated_data['is_admin'],
             # is_staff = self.validated_data['is_staff']
         )   

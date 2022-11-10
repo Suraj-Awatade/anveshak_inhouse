@@ -4,7 +4,6 @@ from blog.serializers import ReviewCommentSerializer, TitleSerializer,EventListS
 import rest_framework 
 from rest_framework.response import Response
 
-
 class StandardResponse:
     def success_response(self,data,message,status):
         return Response(
