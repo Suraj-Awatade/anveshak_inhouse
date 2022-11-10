@@ -111,12 +111,6 @@ class TitleEventSerializer(serializers.ModelSerializer):
 
 class UsersRoleWiseSerializer(serializers.ModelSerializer):
     user_input = serializers.CharField(read_only=True)
-    # user_rolewise = serializers.SerializerMethodField()
-    
-    # def get_user_rolewise(self,obj):
-    #  role_user =obj.roles.all()     
-    #  serializer = AccountSerializer(role_user,many=True)
-    #  return serializer.data
     class Meta:
         model = Role
         fields = ['user_input']

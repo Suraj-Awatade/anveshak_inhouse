@@ -177,24 +177,23 @@ def send_registration_mail(sender,instance=None,created=False,**kwargs):
     #     blog = BlogSerializer(account[0]).data
     #     return StandardResponse.success_response(self,data = blog,message="Users event Title wise fetched successfully!",status=status.HTTP_200_OK)
         
-        
+    
 @permission_classes([IsAdmin,])  
 class UsersRoleWise(APIView):
     
     def get(self,request):
-        return Response({'msg':'Get Request'})
-    
-    def post(self,request):
         serializer = UsersRoleWiseSerializer(data=request.data)
         data = {}
         serializer.is_valid()
         user_input=request.data['user_input']
+       
+        if len(user_input)==0:
+            return Response({'error':'Valid Role required as user_input field'}) 
 
         if user_input=='admin':
             role_users = Role.objects.filter(is_admin=1).values('id')
         elif user_input=='author':
             role_users = Role.objects.filter(is_author=1).values('id')
-            print(role_users)
         elif user_input=='reviewer':
             role_users = Role.objects.filter(is_reviewer=1).values('id')
         elif user_input=='content_writer':
