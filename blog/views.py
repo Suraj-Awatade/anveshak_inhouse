@@ -130,6 +130,7 @@ class AuthorView(APIView):
         return StandardResponse.success_response(self,data = {"":""},message="Data Not Fetched Successfully!",status=status.HTTP_200_OK)
 
 @permission_classes([rest_framework.permissions.IsAuthenticated,])
+
 class FetchAllBlog(APIView):
     def get(self,request,format="json"):
         account = Account.objects.filter(id=self.request.data.get("id"))
@@ -165,15 +166,14 @@ def send_registration_mail(sender,instance=None,created=False,**kwargs):
         send_mail(subject, message, email_from, recipient_list)
    
    
-class RolewiseUsers(APIView):
+# class RolewiseUsers(APIView):
+    # def get(self,request,format="json"):
+    #     account = Account.objects.filter(id=self.request.data.get("id"))
+    #     if not account.exists():
+    #         return StandardResponse.success_response(self,data = {"":""},message="User not Found",status=status.HTTP_200_OK)
 
-    def get(self,request,format="json"):
-        account = Account.objects.filter(id=self.request.data.get("id"))
-        if not account.exists():
-            return StandardResponse.success_response(self,data = {"":""},message="User not Found",status=status.HTTP_200_OK)
-
-        blog = BlogSerializer(account[0]).data
-        return StandardResponse.success_response(self,data = blog,message="Users event Title wise fetched successfully!",status=status.HTTP_200_OK)
+    #     blog = BlogSerializer(account[0]).data
+    #     return StandardResponse.success_response(self,data = blog,message="Users event Title wise fetched successfully!",status=status.HTTP_200_OK)
         
         
 @permission_classes([IsAdmin,])  
