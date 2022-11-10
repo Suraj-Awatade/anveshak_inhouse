@@ -5,7 +5,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status,viewsets
 from rest_framework.authtoken.models import Token
 from blog.models import Role
-from .serializers import AccountSerializer, SignUpSerializer,UpdateSerializer,AdminSerializer,DocumentSerializer
+from .serializers import AccountSerializer, SignUpSerializer,UpdateSerializer,AdminSerializer,DocumentSerializer,ChangePasswordSerializer
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -14,6 +14,19 @@ import uuid
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from . import tasks
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated 
+from .pagination import CustomPageNumberPagination  
+from rest_framework.viewsets import ModelViewSet
+
+class GetAllUserView(ModelViewSet):
+    """
+    List of all Users
+    """
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+    pagination_class=CustomPageNumberPagination
+        
 
 class FileView(rest_framework.views.APIView):
   parser_classes = (MultiPartParser,FormParser)
@@ -27,7 +40,7 @@ class FileView(rest_framework.views.APIView):
       return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @permission_classes([rest_framework.permissions.AllowAny,])  
-class SignUpApi(rest_framework.views.APIView):
+class SignUpApi(rest_framework.views.APIView):     # About required fields
     def get(self,request):
         return Response({'msg':'Get Request'})
    
@@ -37,13 +50,11 @@ class SignUpApi(rest_framework.views.APIView):
         
         if serializer.is_valid():
             user = serializer.save()
-        
-
             data['response'] = "Successfully Registered a new user"
             data['first_name'] = user.first_name
             data['last_name'] = user.last_name
-            
             data['email'] = user.email
+            
             token = Token.objects.get(user=user).key
             data['token'] = token
             
@@ -77,8 +88,8 @@ def send_welcome_mail(sender,instance=None,created=False,**kwargs):
 
         
 @permission_classes((rest_framework.permissions.AllowAny,))
-class ResetPassword(rest_framework.views.APIView):
-    def post(self,request,format = "json"):
+class ResetPassword(rest_framework.views.APIView):             #Not working
+    def post(self,request,format = "json"):                             
         try:
 
             user = Account.objects.filter(email = self.request.data.get("email"))
@@ -89,7 +100,7 @@ class ResetPassword(rest_framework.views.APIView):
             user = user[0]
             user.password_reset = str(uuid.uuid4())
             user.save()
-            if tasks.mailSent.delay(user.email, user.password_reset) :
+            if tasks.mailSent.delay(user.email, user.password_reset):
                 return Response({"Email sent"})
         
         except (AssertionError) as ex:
@@ -120,7 +131,9 @@ class NewPassword(rest_framework.views.APIView):
         user.save()
         
         return Response({"Password Reseted Successfully"})
-class UpdateAccount(rest_framework.views.APIView):
+
+@permission_classes([rest_framework.permissions.IsAuthenticated,])
+class UpdateAccount(rest_framework.views.APIView):    #Check for authorisations.
     
     def get(self,request,pk):
         try:
@@ -135,12 +148,22 @@ class UpdateAccount(rest_framework.views.APIView):
             account = Account.objects.get(pk=pk)
         except Account.DoesNotExist:
             return HttpResponse(status=404)
-        data = rest_framework.parsers.JSONParser().parse(request)
-        serializer = UpdateSerializer(account,data=data)
-        serializer.is_valid(raise_exception=True)
+        # data = rest_framework.parsers.JSONParser().parse(request)
+        data=request.data
+        serializer = UpdateSerializer(account,data=data)    #not updating a single field(patch)..first_name and last_name requires
+        serializer.is_valid(raise_exception=True)           #email not getting updated
         serializer.save()
         return Response(serializer.validated_data)
-class AdminPanel(viewsets.ModelViewSet):
+    
+    def delete(self, request, pk, format=None):
+        try:
+            account = Account.objects.get(pk=pk)
+        except Account.DoesNotExist:
+            return HttpResponse(status=404)
+        account.delete()
+        return Response({'response':'Account Deleted Succesfully'},status=status.HTTP_204_NO_CONTENT)
+    
+class AdminPanel(viewsets.ModelViewSet):      #Pending
     serializer_class = AccountSerializer
     queryset = Account.objects.all()
 
@@ -149,14 +172,14 @@ class AdminPanel(viewsets.ModelViewSet):
         serializer = AccountSerializer(self.queryset,many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
+    
     def partial_update(self, request,pk):
         user = Account.objects.get(pk=pk)
-        
         serializer = AdminSerializer(user,data=request.data ,partial=True)
-  
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.validated_data)
+    
 class UploadView(rest_framework.views.APIView):
   parser_classes = (MultiPartParser, FormParser)
 
@@ -169,8 +192,13 @@ class UploadView(rest_framework.views.APIView):
       return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = Account 
+    permission_classes = (IsAuthenticated,)
 
-    
+    def get_object(self, queryset=None):
+        return self.request.user
     
 
 

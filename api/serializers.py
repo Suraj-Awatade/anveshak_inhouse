@@ -5,7 +5,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ["first_name","last_name","middle_name","email","phone","dob","gender","password","roles"]
+        # fields = '__all__'
+        exclude=('password','password_reset')
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -19,7 +20,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         }
 
     def	save(self):
-
         user = Account(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
@@ -28,10 +28,11 @@ class SignUpSerializer(serializers.ModelSerializer):
             phone=self.validated_data['phone'],
             dob=self.validated_data['dob'],
             gender=self.validated_data['gender'],
+            password = self.validated_data['password']
             # is_admin = self.validated_data['is_admin'],
             # is_staff = self.validated_data['is_staff']
-            
-        )
+        )   
+    
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         if password != password2:
@@ -40,11 +41,12 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class UpdateSerializer(serializers.ModelSerializer):
+    email=serializers.CharField(read_only=True)
     class Meta:
         model = Account
         fields = ["first_name","last_name","middle_name","email","phone","dob","gender"]
-
 
 
 class AdminSerializer(serializers.ModelSerializer):
@@ -53,8 +55,34 @@ class AdminSerializer(serializers.ModelSerializer):
         model = Account
         fields = ["first_name","last_name","is_active","is_staff","is_admin"]
 
-class DocumentSerializer(serializers.ModelSerializer):
 
+class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields ='__all__'
+        
+        
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, max_length=30)
+    password = serializers.CharField(required=True, max_length=30)
+    confirmed_password = serializers.CharField(required=True, max_length=30)
+
+    def validate(self, data):
+        if not self.context['request'].user.check_password(data.get('old_password')):
+            raise serializers.ValidationError({'old_password': 'Wrong password.'})
+
+        if data.get('confirmed_password') != data.get('password'):
+            raise serializers.ValidationError({'password': 'Password must be confirmed correctly.'})
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance
+
+    @property
+    def data(self):
+        # just return success dictionary. you can change this to your need, but i dont think output should be user data after password change
+        return {'Success': 'Password changed Successfully'}
+        

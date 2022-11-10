@@ -86,13 +86,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'anveshak_inhouse',
         'USER': 'root',
-        'PASSWORD': 'anveshak',
+        'PASSWORD': 'Admin@123',
         'HOST':'localhost',
         'PORT':'3306',
     }
 }
-
-
 
 
 # Password validation
@@ -143,7 +141,12 @@ REST_FRAMEWORK = {
      'DEFAULT_PERMISSION_CLASSES':(
                 'rest_framework.permissions.AllowAny',
     ),
+    
 }
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+#     'PAGE_SIZE': 2,
+# }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

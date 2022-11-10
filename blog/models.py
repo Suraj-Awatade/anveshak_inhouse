@@ -44,7 +44,7 @@ class Event(models.Model):
         return False
         
 class Role(models.Model):
-    account = models.OneToOneField(Account,on_delete=models.CASCADE,related_name='roles')
+    account = models.OneToOneField(Account,on_delete=models.CASCADE,related_name='roles',null=True)
     is_admin = models.BooleanField(default=0)
     is_reviewer = models.BooleanField(default=0)
     is_content_writer = models.BooleanField(default=0)
@@ -55,10 +55,10 @@ class Role(models.Model):
         db_table = 'Role'
     
 class ReviewComment(models.Model):
-    
     event_id = models.ForeignKey(Event,on_delete=models.CASCADE,db_column='event_id',related_name='comments')
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
 
 
