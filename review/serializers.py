@@ -9,6 +9,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['id','title_id','author_id','description','year','created_at','status']
+        
 class EventReviewersSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventReviewers
@@ -17,11 +18,9 @@ class EventReviewersSerializer(serializers.ModelSerializer):
 class FetchEventReviewersSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     event = serializers.SerializerMethodField()
-
     class Meta:
         model = Event
         fields = ['title','event']
-        # fields = ['event']
 
     def get_title(self,obj):
         event = Event.objects.filter(id = obj.event_id)
@@ -39,7 +38,6 @@ class FetchReviewerEventCountSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField()
     approved = serializers.SerializerMethodField()
     rejected = serializers.SerializerMethodField()
-    
     class Meta:
         model = Event
         fields = ['assigned_reviewer_id','name','total','approved','rejected']
@@ -54,20 +52,12 @@ class FetchReviewerEventCountSerializer(serializers.ModelSerializer):
     def get_total(self,obj):
         dict = {}
         dict['total'] = obj.get('total')
-
         a = EventReviewers.objects.filter(archived=0,assigned_reviewer_id = obj.get('assigned_reviewer_id')).filter(event__status = 'U').values('event_id').annotate(Count('event_id'))
 
         if len(a) > 0:
             dict['Under Review'] = a[0].get('event_id__count')
         else:
             dict['Under Review'] = 0
-
-        # a = EventReviewers.objects.filter(archived=0,assigned_reviewer_id = obj.get('assigned_reviewer_id')).filter(event__status = 'RW').values('event_id').annotate(Count('event_id'))
-        # if len(a) > 0:
-        #     dict['Rework'] = a[0].get('event_id__count')
-        # else:
-        #     dict['Rework'] = 0
-            
         return dict
     
     def get_approved(self,obj):

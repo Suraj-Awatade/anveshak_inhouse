@@ -25,6 +25,7 @@ class ReviewerAssignedEventsViewSet(ModelViewSet):
         return Event.objects.filter(id__in=assigned_event_ids).all()
     serializer_class = EventSerializer
 
+
 # To post comments on an event
 class ReviewerCommentsViewSet(ModelViewSet):
     renderer_classes = [CustomRenderer]
@@ -45,6 +46,7 @@ class AuthorViewSet(ModelViewSet):
     serializer_class = AuthorEventSerializer
     permission_classes = [IsAuthor]
     renderer_classes = [CustomRenderer]
+        
         
 @permission_classes([rest_framework.permissions.IsAuthenticated,IsAdmin])
 class AssignReviewer(APIView):
@@ -76,14 +78,16 @@ class AssignReviewer(APIView):
 
 @permission_classes([rest_framework.permissions.IsAuthenticated,IsReviewer])
 class FetchReviewerEvent(APIView):
+    
     def get(self,request,format="json"):
         eventreviewers = EventReviewers.objects.filter(assigned_reviewer_id = request.user.id)
-
         data = FetchEventReviewersSerializer(eventreviewers,many=True).data
         return StandardResponse.success_response(self,data = data,message="Reviwer event succesfully",status=status.HTTP_200_OK)
     
+    
 @permission_classes([rest_framework.permissions.IsAuthenticated,IsAdmin])
 class FetchReviewerEventCount(APIView):
+    
     def get(self,request,format="json"):
         data = EventReviewers.objects.filter(archived=0).values('assigned_reviewer_id').annotate(total=Count('event_id'))
         data = FetchReviewerEventCountSerializer(data,many=True).data
