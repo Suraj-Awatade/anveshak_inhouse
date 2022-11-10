@@ -138,6 +138,8 @@ class FetchAllBlog(APIView):
             return StandardResponse.success_response(self,data = {"":""},message="User not Found",status=status.HTTP_200_OK)
 
         blog = BlogSerializer(account[0]).data
+        if blog['title']==[]:
+            return StandardResponse.success_response(self, data = {}, message="This User don't have any events.",status=status.HTTP_200_OK)
         return StandardResponse.success_response(self,data = blog,message="Users event Title wise fetched successfully!",status=status.HTTP_200_OK)
     
     
