@@ -12,7 +12,7 @@ router.register('events',viewset=EventViewSet,basename='events')
 event_router = routers.NestedDefaultRouter(router,'events',lookup='event')
 event_router.register('comments',viewset=ReviewCommentViewSet,basename='event-comments')
 router.register('roles',viewset=RoleViewSet,basename='roles')
-router.register('add-user',viewset=AdminAddUser,basename='adding_user')
+router.register('admin-add-user',viewset=AdminAddUser,basename='adding_user')
 
 
 urlpatterns = [

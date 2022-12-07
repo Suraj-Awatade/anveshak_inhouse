@@ -31,6 +31,8 @@ class Event(models.Model):
     year = models.IntegerField()
     created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=12,choices=STATUS_CHOICES,default=STATUS_SUBMITTED)
+    is_saved = models.BooleanField(default=1)
+    is_submitted = models.BooleanField(default=0)
     REQUIRED_FIELDS = ['title','description']
     class Meta:
         db_table = 'Event'
@@ -60,5 +62,12 @@ class ReviewComment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    
+class PageReadLogs(models.Model):
+    page = models.IntegerField(null = True)
+    percentage = models.FloatField(null=True)
+    event = models.ForeignKey(Event,on_delete=models.CASCADE)
+    account = models.ForeignKey(Account,on_delete=models.CASCADE)
+
 
 

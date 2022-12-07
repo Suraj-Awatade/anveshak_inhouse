@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from blog.renderers import CustomRenderer
-from .models import Event, ReviewComment, Role, Title
+from .models import Event, ReviewComment, Role, Title, PageReadLogs
 from blog.serializers import (AdminTitleSerializer, AuthorTitleSerializer, ReviewCommentSerializer, 
                               ReviewerTitleSerializer, RoleSerializer,ContentWriterTitleSerializer,
                               UserTitleSerializer,UserEventSerializer,AdminEventSerializer,
@@ -166,16 +166,7 @@ def send_registration_mail(sender,instance=None,created=False,**kwargs):
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [instance.email, ]
         send_mail(subject, message, email_from, recipient_list)
-   
-   
-# class RolewiseUsers(APIView):
-    # def get(self,request,format="json"):
-    #     account = Account.objects.filter(id=self.request.data.get("id"))
-    #     if not account.exists():
-    #         return StandardResponse.success_response(self,data = {"":""},message="User not Found",status=status.HTTP_200_OK)
 
-    #     blog = BlogSerializer(account[0]).data
-    #     return StandardResponse.success_response(self,data = blog,message="Users event Title wise fetched successfully!",status=status.HTTP_200_OK)
         
     
 @permission_classes([IsAdmin,])  

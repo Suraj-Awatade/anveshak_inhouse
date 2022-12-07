@@ -54,7 +54,6 @@ class SignUpApi(rest_framework.views.APIView):     # About required fields
             data['first_name'] = user.first_name
             data['last_name'] = user.last_name
             data['email'] = user.email
-            
             token = Token.objects.get(user=user).key
             data['token'] = token
             
@@ -155,7 +154,7 @@ class UpdateAccount(rest_framework.views.APIView):    #Check for authorisations.
         serializer.save()
         return Response(serializer.validated_data)
     
-    def delete(self, request, pk, format=None):
+    def delete(self, request, pk, format=None):   #User can not delete is account. He can only deactivate. Need to remove this function.
         try:
             account = Account.objects.get(pk=pk)
         except Account.DoesNotExist:

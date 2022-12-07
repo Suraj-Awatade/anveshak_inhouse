@@ -6,8 +6,7 @@ from time import sleep
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'anveshak_inhouse.settings')
 
-app = Celery('polibhaji.settings')
-
+app = Celery('anveshak_inhouse.settings')
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
 # - namespace='CELERY' means all celery-related configuration keys

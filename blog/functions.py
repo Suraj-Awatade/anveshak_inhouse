@@ -15,7 +15,7 @@ def get_user_role(self):
         return 'content writer'
     elif role_obj.is_author:
         return 'author'
-    print(role_obj)
+    # print(role_obj)
 
 
 

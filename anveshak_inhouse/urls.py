@@ -26,7 +26,7 @@ router.register('adminpanel',views.AdminPanel,basename='admin')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),  
+    # path('__debug__/', include('debug_toolbar.urls')),  
     path('api/',include("api.urls") ),
     path('api/',include(router.urls)),
     path('blog/',include("blog.urls")),
